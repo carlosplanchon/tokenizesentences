@@ -122,7 +122,8 @@ class SplitIntoSentences:
         text = text.replace("<prd>", ".")
 
         sentences = text.split("<stop>")
-        sentences = sentences[:-1]
         sentences = [s.strip() for s in sentences]
-
+        if len(sentences) > 0:
+            if sentences[-1] == "":
+                sentences = sentences[:-1]
         return sentences
