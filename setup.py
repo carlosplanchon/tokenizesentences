@@ -8,7 +8,7 @@ readme = Path("README.md").read_text()
 setup(
     name="tokenizesentences",
     packages=["tokenizesentences"],
-    version="0.1",
+    version="0.2",
     license="GPL3",
     description="Python3 module to tokenize english sentences.",
     long_description=readme,
@@ -17,7 +17,7 @@ setup(
     author_email="bubbledoloresuruguay2@gmail.com",
     url="https://github.com/carlosplanchon/tokenizesentences",
     download_url="https://github.com/carlosplanchon/"
-        "tokenizesentences/archive/v0.1.tar.gz",
+        "tokenizesentences/archive/v0.2.tar.gz",
     keywords=["tokenize", "english", "sentences"],
     classifiers=[
         "Intended Audience :: Developers",
