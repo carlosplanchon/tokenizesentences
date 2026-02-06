@@ -1,12 +1,12 @@
 # tokenizesentences
-*Python3 module to tokenize english sentences.*
+*Python module to tokenize english sentences.*
 Based on the answer of D Greenberg in StackOverflow:
 https://stackoverflow.com/questions/4576077/python-split-text-on-sentences
 
 ## Installation
-### Install with pip
+### Install with uv:
 ```
-pip3 install -U tokenizesentences
+uv add tokenizesentences
 ```
 
 ## Usage

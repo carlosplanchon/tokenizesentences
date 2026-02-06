@@ -2,8 +2,6 @@
 
 from re import sub
 
-from typing import List
-
 
 class SplitIntoSentences:
     """
@@ -23,7 +21,7 @@ class SplitIntoSentences:
         self.websites = "[.](com|net|org|io|gov|me|edu)"
         self.digits = "([0-9])"
 
-    def split_into_sentences(self, text: str) -> List[str]:
+    def split_into_sentences(self, text: str) -> list[str]:
         """
         Function that split a text into sentences.
         :param text: str: Text to split.
