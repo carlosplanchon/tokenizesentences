@@ -44,14 +44,6 @@ In [4]: tokenize_spans("It works. Try it!")
 Out[4]: [(0, 9), (10, 17)]
 ```
 
-### legacy API
-The 0.3 interface keeps working and delegates to `tokenize()`:
-```python
-from tokenizesentences import SplitIntoSentences
-
-SplitIntoSentences().split_into_sentences("It works. Try it!")
-```
-
 ## notes
 Deterministic, rule-based and English-only: an index-based scanner
 inspired by [the answer of D Greenberg in StackOverflow](https://stackoverflow.com/questions/4576077/python-split-text-on-sentences),

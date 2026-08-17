@@ -11,7 +11,6 @@ in comments as "documented cost" pin that tradeoff on purpose.
 
 import pytest
 
-from tokenizesentences import SplitIntoSentences
 from tokenizesentences import tokenize
 from tokenizesentences import tokenize_spans
 
@@ -480,33 +479,7 @@ def test_gaps_are_whitespace_only(text: str) -> None:
     assert text[previous_end:].strip() == ""
 
 
-# --- Group 14: legacy API ------------------------------------------------
-
-
-def test_legacy_import_paths() -> None:
-    """Both historical import paths must expose the same class."""
-    from tokenizesentences.tokenizesentences import (
-        SplitIntoSentences as InnerSplitIntoSentences,
-    )
-
-    assert SplitIntoSentences is InnerSplitIntoSentences
-
-
-def test_legacy_class_delegates_to_tokenize() -> None:
-    """The 0.3 usage pattern keeps working and matches tokenize()."""
-    splitter = SplitIntoSentences()
-    assert splitter.split_into_sentences(README_TEXT) == README_SENTENCES
-    assert splitter.split_into_sentences(README_TEXT) == tokenize(README_TEXT)
-
-
-def test_legacy_class_is_stateless() -> None:
-    """Separate instances behave identically."""
-    first = SplitIntoSentences().split_into_sentences("One. Two.")
-    second = SplitIntoSentences().split_into_sentences("One. Two.")
-    assert first == second == ["One.", "Two."]
-
-
-# --- Group 15: known limits, pinned as strict xfails ---------------------
+# --- Group 14: known limits, pinned as strict xfails ---------------------
 
 XFAIL_CASES = [
     pytest.param(

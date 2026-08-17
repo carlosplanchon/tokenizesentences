@@ -16,7 +16,7 @@ spurious one.
 import re
 from typing import Final
 
-__all__ = ["SplitIntoSentences", "tokenize", "tokenize_spans"]
+__all__ = ["tokenize", "tokenize_spans"]
 
 _CANDIDATE_RE: Final[re.Pattern[str]] = re.compile(r"[.!?]")
 
@@ -299,14 +299,3 @@ def tokenize_spans(text: str) -> list[tuple[int, int]]:
 def tokenize(text: str) -> list[str]:
     """Split English text into sentences (literal substrings of text)."""
     return [text[a:b] for a, b in tokenize_spans(text)]
-
-
-class SplitIntoSentences:
-    """
-    Legacy interface kept for backwards compatibility.
-
-    Delegates to tokenize(); prefer tokenize() in new code.
-    """
-
-    def split_into_sentences(self, text: str) -> list[str]:
-        return tokenize(text)
