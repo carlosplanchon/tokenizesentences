@@ -49,9 +49,10 @@ Deterministic, rule-based and English-only: an index-based scanner
 inspired by [the answer of D Greenberg in StackOverflow](https://stackoverflow.com/questions/4576077/python-split-text-on-sentences),
 with no models and no dependencies.
 
-Sentences are literal substrings of the input, by construction. The text
-is never rewritten — punctuation stays where the author put it (also
-inside quotes) and internal newlines are preserved.
+Sentences are literal substrings of the input, by construction. The
+text is never rewritten: punctuation stays where the author put it
+(also inside quotes) and single newlines inside a sentence are
+preserved. A blank line always ends a sentence.
 
 The heuristics are conservative: when in doubt they join, so a missed
 boundary is preferred over a spurious split. Known limits, pinned by the
@@ -60,10 +61,12 @@ test suite:
 - A lowercase word after the mark never splits: `she yelled "Stop!" and
   ran away.` is one sentence, and so is informal text like `i came. i
   saw.`
-- A dot glued to a word never splits — that is how any domain, filename
-  or version number survives without a TLD list — so the typo
+- A dot glued to a word never splits (that is how any domain, filename
+  or version number survives without a TLD list), so the typo
   `He left.Then she cried.` stays joined.
-- `...` never ends a sentence.
+- `...` (glued or spaced `. . .`) ends a sentence only when a
+  capitalized word follows. `I` does not count: it is always
+  capitalized, so it carries no signal.
 - After ambiguous abbreviations (`p.m.`, `Inc.`, `U.S.A.`) a sentence
   break is only detected before common starter words: `at 5 p.m. He
   left` splits, `at 5 p.m. Monday` does not.

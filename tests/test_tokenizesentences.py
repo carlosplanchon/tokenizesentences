@@ -124,12 +124,127 @@ SUFFIX_CASES = [
     # Documented cost: "Board" is not a starter, the NP-continuation
     # heuristic keeps this joined ("Nike Inc. CEO said..." is one NP).
     ("Acme Inc. Board approved it.", ["Acme Inc. Board approved it."]),
+    # Institutional and street abbreviations are conditional too.
+    (
+        "The Sales Dept. Heads met today.",
+        ["The Sales Dept. Heads met today."],
+    ),
+    (
+        "The Sales Dept. They met today.",
+        ["The Sales Dept.", "They met today."],
+    ),
+    ("Natl. Grid stock rose.", ["Natl. Grid stock rose."]),
+    ("Fifth Ave. Traffic was heavy.", ["Fifth Ave. Traffic was heavy."]),
+    (
+        "He walked down Fifth Ave. Then he stopped.",
+        ["He walked down Fifth Ave.", "Then he stopped."],
+    ),
+    (
+        "Ohio State Univ. Its campus is huge.",
+        ["Ohio State Univ.", "Its campus is huge."],
+    ),
+    ("Acme Mfg. Workers went home.", ["Acme Mfg. Workers went home."]),
+    (
+        "The office is on Elm Ln. Nobody was there.",
+        ["The office is on Elm Ln.", "Nobody was there."],
+    ),
 ]
 
 
 @pytest.mark.parametrize(("text", "expected"), SUFFIX_CASES)
 def test_suffixes(text: str, expected: list[str]) -> None:
     """Suffixes split only before a safe sentence-starter word."""
+    assert tokenize(text) == expected
+
+
+# --- Group 3b: expanded starter words ------------------------------------
+
+EXPANDED_STARTER_CASES = [
+    ("Acme Inc. Then it grew.", ["Acme Inc.", "Then it grew."]),
+    ("Acme Inc. Later it folded.", ["Acme Inc.", "Later it folded."]),
+    (
+        "Foo Ltd. Meanwhile profits fell.",
+        ["Foo Ltd.", "Meanwhile profits fell."],
+    ),
+    (
+        "They met at 5 p.m. When he arrived, they left.",
+        ["They met at 5 p.m.", "When he arrived, they left."],
+    ),
+    (
+        "Apple Inc. What happened next surprised everyone.",
+        ["Apple Inc.", "What happened next surprised everyone."],
+    ),
+    (
+        "He toured the U.S.A. In 2020 he stopped.",
+        ["He toured the U.S.A.", "In 2020 he stopped."],
+    ),
+    ("Smith et al. Nothing held up.", ["Smith et al.", "Nothing held up."]),
+    (
+        "It closed at 6 a.m. Afterward we slept.",
+        ["It closed at 6 a.m.", "Afterward we slept."],
+    ),
+    (
+        "He was plan B. Nevertheless it worked.",
+        ["He was plan B.", "Nevertheless it worked."],
+    ),
+    ("Acme Corp. Everyone cheered.", ["Acme Corp.", "Everyone cheered."]),
+    # Rejected words stay out: they are real surnames or fixed
+    # collocations, so these must remain joined.
+    (
+        "He reads U.S.A. Today on the train.",
+        ["He reads U.S.A. Today on the train."],
+    ),
+    (
+        "They ranked the U.S.A. No. 1 in exports.",
+        ["They ranked the U.S.A. No. 1 in exports."],
+    ),
+    (
+        "The paper cited W. So and others.",
+        ["The paper cited W. So and others."],
+    ),
+    (
+        "He toured the U.S.A. Revenue rose anyway.",
+        ["He toured the U.S.A. Revenue rose anyway."],
+    ),
+    # Auxiliaries open questions after conditional abbreviations.
+    (
+        "We make a good team, you and I. Did you see the game?",
+        ["We make a good team, you and I.", "Did you see the game?"],
+    ),
+    ("Acme Inc. Is it profitable?", ["Acme Inc.", "Is it profitable?"]),
+    (
+        "They met at 5 p.m. Was that late?",
+        ["They met at 5 p.m.", "Was that late?"],
+    ),
+    (
+        "He lives in the U.S.A. Has he moved?",
+        ["He lives in the U.S.A.", "Has he moved?"],
+    ),
+    ("Bob Sr. Should we call him?", ["Bob Sr.", "Should we call him?"]),
+    # Rejected auxiliaries: real surnames or date words stay joined.
+    (
+        "A column by George F. Will appeared today.",
+        ["A column by George F. Will appeared today."],
+    ),
+    (
+        "A header by E. Can won the match.",
+        ["A header by E. Can won the match."],
+    ),
+    (
+        "Reports by H. Do appeared online.",
+        ["Reports by H. Do appeared online."],
+    ),
+    (
+        "The deadline is 5 p.m. May 5 at noon.",
+        ["The deadline is 5 p.m. May 5 at noon."],
+    ),
+]
+
+
+@pytest.mark.parametrize(("text", "expected"), EXPANDED_STARTER_CASES)
+def test_expanded_starters(text: str, expected: list[str]) -> None:
+    """Function words that cannot continue a noun phrase split after
+    conditional abbreviations; rejected lookalikes stay joined."""
     assert tokenize(text) == expected
 
 
@@ -160,6 +275,31 @@ NUMBER_CASES = [
     ("Founded ca. 1900 it grew.", ["Founded ca. 1900 it grew."]),
     ("It is approx. 5 km away.", ["It is approx. 5 km away."]),
     ("The shop, est. 1999, thrives.", ["The shop, est. 1999, thrives."]),
+    # Month abbreviations bind to a following number.
+    (
+        "He was born Jan. 15, 1990 in Ohio.",
+        ["He was born Jan. 15, 1990 in Ohio."],
+    ),
+    (
+        "The deadline is Aug. 2026 at the latest.",
+        ["The deadline is Aug. 2026 at the latest."],
+    ),
+    ("It happened on Oct. 7 that year.", ["It happened on Oct. 7 that year."]),
+    ("Prices fell on Dec. 24 as usual.", ["Prices fell on Dec. 24 as usual."]),
+    ("Sept. 11 changed everything.", ["Sept. 11 changed everything."]),
+    # Before a capital the month still ends the sentence.
+    (
+        "It was cold in Jan. He stayed home.",
+        ["It was cold in Jan.", "He stayed home."],
+    ),
+    # Documented cost: a person named Jan followed by a digit joins.
+    (
+        "I met Jan. 5 minutes later she left.",
+        ["I met Jan. 5 minutes later she left."],
+    ),
+    # Degree-sign variants of "No.".
+    ("Find it at N°. 1026 on the map.", ["Find it at N°. 1026 on the map."]),
+    ("See Nº. 7 for details.", ["See Nº. 7 for details."]),
 ]
 
 
@@ -208,10 +348,10 @@ ACRONYM_CASES = [
         ["He went to the U.S.A.", "He liked it."],
     ),
     ("The U.S. is big.", ["The U.S. is big."]),
-    # Documented cost: "Many" is not a starter, acronyms stay joined.
+    # "Many" is a quantifier starter: acronyms split before it.
     (
         "He visited the U.S.A. Many stayed home.",
-        ["He visited the U.S.A. Many stayed home."],
+        ["He visited the U.S.A.", "Many stayed home."],
     ),
     ("She has a Ph.D. in physics.", ["She has a Ph.D. in physics."]),
     (
@@ -229,7 +369,7 @@ ACRONYM_CASES = [
     ),
     (
         "It happened at 5 a.m. Nobody saw it.",
-        ["It happened at 5 a.m. Nobody saw it."],
+        ["It happened at 5 a.m.", "Nobody saw it."],
     ),
     # Rare all-lowercase dotted acronyms never split.
     (
@@ -247,6 +387,16 @@ ACRONYM_CASES = [
         ["He wrote the letter Q.", "He mailed it."],
     ),
     ("I don't. Really.", ["I don't.", "Really."]),
+    # A title after a clock time reads as the subject of the same
+    # clause; uppercase "P.M." keeps the generic acronym behavior.
+    (
+        "At 5 a.m. Mr. Smith went to the bank.",
+        ["At 5 a.m. Mr. Smith went to the bank."],
+    ),
+    (
+        "He left at 6 P.M. Mr. Smith then went home.",
+        ["He left at 6 P.M.", "Mr. Smith then went home."],
+    ),
 ]
 
 
@@ -321,25 +471,110 @@ def test_quotes(text: str, expected: list[str]) -> None:
     assert tokenize(text) == expected
 
 
+# --- Group 8b: detached unambiguous closers ------------------------------
+
+DETACHED_CLOSER_CASES = [
+    # The motivating case: a spaced curly quote joins its sentence.
+    (
+        "He said “Hello. ” Then he left.",
+        ["He said “Hello. ”", "Then he left."],
+    ),
+    # Same shape with a parenthesis.
+    (
+        "He waved (goodbye. ) Then he left.",
+        ["He waved (goodbye. )", "Then he left."],
+    ),
+    # Lowercase continuation: absorbing the closer lets R5 see "and"
+    # and repairs a spurious split.
+    (
+        "He mumbled (quietly. ) and left.",
+        ["He mumbled (quietly. ) and left."],
+    ),
+    # R4 defer: another terminal follows the absorbed closers, so the
+    # inner dot yields to the enclosing sentence.
+    (
+        "He whispered (“Wait. ”). Then he ran.",
+        ["He whispered (“Wait. ”).", "Then he ran."],
+    ),
+    # An elision apostrophe after a space is an opener, not a closer.
+    (
+        "The ’80s ended. ’90s kids remember.",
+        ["The ’80s ended.", "’90s kids remember."],
+    ),
+    # Newlines are never crossed: the quote stays with the next line.
+    (
+        "He said “Fine.\n” Then he left.",
+        ["He said “Fine.", "” Then he left."],
+    ),
+]
+
+
+@pytest.mark.parametrize(("text", "expected"), DETACHED_CLOSER_CASES)
+def test_detached_closers(text: str, expected: list[str]) -> None:
+    """Unambiguous closers separated from the mark by spaces or tabs
+    are absorbed into the sentence; ambiguous straight quotes stay
+    glued-only."""
+    assert tokenize(text) == expected
+
+
 # --- Group 9: ellipses and terminal clusters -----------------------------
 
 ELLIPSIS_CASES = [
     ("He paused... then left.", ["He paused... then left."]),
-    # Parity with 0.3: an ellipsis never splits, even before a capital.
-    ("He paused... Then he spoke.", ["He paused... Then he spoke."]),
+    # An ellipsis before a capitalized word starts a new sentence.
+    ("He paused... Then he spoke.", ["He paused...", "Then he spoke."]),
+    (
+        "I never meant that.... She left the store.",
+        ["I never meant that....", "She left the store."],
+    ),
+    (
+        "He wondered... What if it fails?",
+        ["He wondered...", "What if it fails?"],
+    ),
+    (
+        "What.. Happened next is unclear.",
+        ["What..", "Happened next is unclear."],
+    ),
+    # "I" is always capitalized, so it carries no signal and joins.
+    (
+        "He trailed off... I never saw him again.",
+        ["He trailed off... I never saw him again."],
+    ),
+    # Digits and glued words join too.
+    ("It costs... 42 dollars.", ["It costs... 42 dollars."]),
+    ("Wait...Maybe not.", ["Wait...Maybe not."]),
     ("He trailed off...", ["He trailed off..."]),
     ("Stop...! He ran.", ["Stop...!", "He ran."]),
     ("Really...?", ["Really...?"]),
     ("Wait?! She left.", ["Wait?!", "She left."]),
     ("Stop!!! He ran.", ["Stop!!!", "He ran."]),
-    ("What.. Happened next is unclear.", ["What.. Happened next is unclear."]),
+    # Spaced (Chicago-style) ellipses behave like glued ones and never
+    # shatter into dot fragments.
+    ("He paused . . . then spoke.", ["He paused . . . then spoke."]),
+    ("He paused . . . Then he spoke.", ["He paused . . .", "Then he spoke."]),
+    (
+        "The laws will appear less complex. . . .",
+        ["The laws will appear less complex. . . ."],
+    ),
+    (
+        "Indicate the end with a period . . . . Next sentence.",
+        ["Indicate the end with a period . . . .", "Next sentence."],
+    ),
+    # Bracketed ellipses are editorial omission marks, never ends.
+    (
+        "He said [...] and left. Then he ran.",
+        ["He said [...] and left.", "Then he ran."],
+    ),
+    # Documented cost: a sentence starting with a dotted name joins.
+    ("I use C#. .NET is great.", ["I use C#. .NET is great."]),
 ]
 
 
 @pytest.mark.parametrize(("text", "expected"), ELLIPSIS_CASES)
 def test_ellipses(text: str, expected: list[str]) -> None:
-    """Only the last mark of a punctuation run may decide a boundary,
-    and ellipsis dots never do."""
+    """Only the last mark of a punctuation run may decide a boundary;
+    an ellipsis ends a sentence only before a capitalized word other
+    than "I"."""
     assert tokenize(text) == expected
 
 
@@ -352,7 +587,9 @@ EDGE_CASES = [
     ("\t \n ", []),
     (".", ["."]),
     (" . ", ["."]),
-    ("Hi. . Bye.", ["Hi.", ".", "Bye."]),
+    # A stray spaced dot reads as an ellipsis run: it attaches left
+    # and the capitalized word starts a new sentence.
+    ("Hi. . Bye.", ["Hi. .", "Bye."]),
     ("No trailing punctuation here", ["No trailing punctuation here"]),
     ("  Leading spaces. And more.", ["Leading spaces.", "And more."]),
     ("Trailing spaces here.   ", ["Trailing spaces here."]),
@@ -363,8 +600,18 @@ EDGE_CASES = [
     ("First line.\nSecond line.", ["First line.", "Second line."]),
     # Newlines inside a sentence are preserved, never rewritten.
     ("He said\nhello. Bye.", ["He said\nhello.", "Bye."]),
-    # Parity with 0.3: a blank line alone does not force a boundary.
-    ("Title\n\nBody text here.", ["Title\n\nBody text here."]),
+    # A blank line always ends a sentence, even without punctuation.
+    ("Title\n\nBody text here.", ["Title", "Body text here."]),
+    (
+        "One para ends\n\nAnother starts. And ends.",
+        ["One para ends", "Another starts.", "And ends."],
+    ),
+    ("He said hello.\n\nShe left.", ["He said hello.", "She left."]),
+    (
+        "A title\n \nwith a spaced blank line.",
+        ["A title", "with a spaced blank line."],
+    ),
+    ("“Quote.”\n\nNext paragraph.", ["“Quote.”", "Next paragraph."]),
 ]
 
 
@@ -432,6 +679,8 @@ PROPERTY_CORPUS = [
     "He paused... Then he spoke. Stop...! He ran.",
     "Use <stop>. Then use <prd>.",
     "“Hello.” Next one. Don’t. Really.",
+    "He said “Hello. ” Then he left.",
+    "Indicate the end with a period . . . . Next sentence.",
     "He said\nhello. Bye.",
     "Title\n\nBody text here.",
     "  Leading spaces. And more.   ",
@@ -497,8 +746,9 @@ XFAIL_CASES = [
         ['He said "Hello. "', "Then he left."],
         id="detached-closing-quote",
         marks=pytest.mark.xfail(
-            reason="Closers are absorbed only when glued to the "
-            "terminal mark.",
+            reason="A detached straight quote is ambiguous between "
+            "opening and closing; only unambiguous closers are "
+            "absorbed across spaces.",
             strict=True,
         ),
     ),
