@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tokenizesentences"
-version = "0.3"
-description = "Python module to tokenize english sentences."
+version = "0.4.0"
+description = "Tiny, dependency-free English sentence tokenizer."
 readme = "README.md"
 
 license = "MIT"
@@ -14,21 +14,47 @@ license-files = ["LICENSE"]
 authors = [
     {name = "Carlos A. Planchón", email = "carlosandresplanchonprestes@gmail.com"}
 ]
-keywords = ["tokenize", "english", "sentences"]
+keywords = ["tokenize", "english", "sentences", "sentence-splitter", "segmentation"]
 classifiers = [
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "Topic :: Software Development :: Build Tools",
-    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Text Processing :: Linguistic",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14"
+    "Programming Language :: Python :: 3.14",
+    "Typing :: Typed"
 ]
 requires-python = ">=3.10"
 
 [project.urls]
 Repository = "https://github.com/carlosplanchon/tokenizesentences"
 
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.12", "ty==0.0.18"]
+
 [tool.setuptools]
 packages = ["tokenizesentences"]
+
+[tool.setuptools.package-data]
+tokenizesentences = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -q --strict-markers"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 79
+
+[tool.ruff.lint]
+extend-select = ["I"]
+# Shebangs on library modules are the house style (see ansistrip,
+# vtclear), even though the files are not executable.
+ignore = ["EXE001"]
+
+[tool.ruff.lint.isort]
+force-single-line = true

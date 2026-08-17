@@ -1,0 +1,50 @@
+name: Release
+
+# Publish to PyPI when a version tag is pushed, e.g. `git tag v0.4.0 && git push origin v0.4.0`.
+# Tag commits that are already green on master.
+on:
+  push:
+    tags:
+      - "v*"
+
+# Least privilege by default. The publish job opts into id-token below.
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    # Bind to a GitHub Environment named "pypi". Add a required reviewer on it so a tag push
+    # cannot publish without manual approval, and configure the matching trusted publisher on PyPI.
+    environment: pypi
+    permissions:
+      id-token: write   # required for PyPI trusted publishing (OIDC), no stored token
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      # Catch the classic slip (tagging before committing the version bump) here, in seconds and
+      # with a clear message, instead of at the upload with PyPI's "File already exists".
+      - name: Tag must match the packaged version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(grep -m1 '^version' pyproject.toml | cut -d'"' -f2)
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::Tag v$tag does not match pyproject.toml version $pkg. Commit the version bump, then re-tag that commit."
+            exit 1
+          fi
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - name: Build sdist and wheel
+        run: uv build
+      # Run the tests from outside the checkout, against the wheel that is about to be
+      # uploaded: from here the flat layout cannot shadow it with the tokenizesentences/ directory.
+      - name: Test the built wheel
+        run: |
+          cd "${RUNNER_TEMP}"
+          uv run --isolated --no-project --with "${GITHUB_WORKSPACE}"/dist/*.whl --with pytest \
+            pytest "${GITHUB_WORKSPACE}/tests" -q
+      # In GitHub Actions with id-token write, uv publishes via trusted publishing (OIDC).
+      # It fetches a short-lived, single-use token from PyPI, so nothing is stored anywhere.
+      - name: Publish to PyPI
+        run: uv publish --trusted-publishing always
