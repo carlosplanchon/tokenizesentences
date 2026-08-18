@@ -42,7 +42,7 @@ jobs:
       - name: Test the built wheel
         run: |
           cd "${RUNNER_TEMP}"
-          uv run --isolated --no-project --with "${GITHUB_WORKSPACE}"/dist/*.whl --with pytest \
+          uv run --isolated --no-project --with "${GITHUB_WORKSPACE}"/dist/*.whl --with pytest --with hypothesis \
             pytest "${GITHUB_WORKSPACE}/tests" -q
       # In GitHub Actions with id-token write, uv publishes via trusted publishing (OIDC).
       # It fetches a short-lived, single-use token from PyPI, so nothing is stored anywhere.
