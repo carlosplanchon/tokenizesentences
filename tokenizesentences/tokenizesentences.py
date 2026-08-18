@@ -28,23 +28,30 @@ _PARAGRAPH_RE: Final[re.Pattern[str]] = re.compile(r"\n[ \t\r]*\n")
 # Word token ending right before a candidate mark. Apostrophes are
 # word-internal so contractions ("don't") are not mistaken for
 # single-letter initials; dots are word-internal so dotted abbreviations
-# arrive whole ("U.S.A", "p.m", "e.g").
+# arrive whole ("U.S.A", "p.m", "e.g"). Letters are Unicode ("José"),
+# because English text in the wild carries accented names; the lists
+# stay ASCII and English-only.
 _TOKEN_BEFORE_RE: Final[re.Pattern[str]] = re.compile(
-    r"(?<!['’0-9A-Za-z])([A-Za-z°º]+(?:['’.][A-Za-z°º]+)*)\Z"
+    r"(?<!['’])(?<![^\W_])"
+    r"((?:[^\W\d_]|[°º])+(?:['’.](?:[^\W\d_]|[°º])+)*)\Z"
 )
-_WORD_RE: Final[re.Pattern[str]] = re.compile(r"[A-Za-z]+")
+_WORD_RE: Final[re.Pattern[str]] = re.compile(r"[^\W\d_]+")
 
 # Longest listed token is far shorter than this: a fixed lookbehind
 # window keeps _token_before O(1) per candidate.
 _TOKEN_WINDOW: Final[int] = 24
 
 _TERMINALS: Final[frozenset[str]] = frozenset({".", "!", "?"})
-_CLOSERS: Final[frozenset[str]] = frozenset({'"', "”", "'", "’", ")", "]"})
-_OPENERS: Final[frozenset[str]] = frozenset({'"', "“", "'", "‘", "(", "["})
+_CLOSERS: Final[frozenset[str]] = frozenset(
+    {'"', "”", "'", "’", ")", "]", "»"}
+)
+_OPENERS: Final[frozenset[str]] = frozenset(
+    {'"', "“", "'", "‘", "(", "[", "«"}
+)
 
 # Closers that cannot open: safe to absorb even across spaces. The
 # straight quote and apostrophe are ambiguous and stay glued-only.
-_DETACHED_CLOSERS: Final[frozenset[str]] = frozenset({"”", "’", ")", "]"})
+_DETACHED_CLOSERS: Final[frozenset[str]] = frozenset({"”", "’", ")", "]", "»"})
 _HSPACE: Final[frozenset[str]] = frozenset({" ", "\t"})
 
 # Titles precede a proper name; a dot after them never ends a sentence.

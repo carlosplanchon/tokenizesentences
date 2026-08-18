@@ -690,6 +690,22 @@ UNICODE_CASES = [
     ("It’s fine. Really fine.", ["It’s fine.", "Really fine."]),
     ("The world’s end. Nobody came.", ["The world’s end.", "Nobody came."]),
     ("Don’t. Really.", ["Don’t.", "Really."]),
+    # Accented words are real word tokens (English text in the wild).
+    ("I met José. Then we left.", ["I met José.", "Then we left."]),
+    (
+        "Beyoncé sang. Everyone cheered.",
+        ["Beyoncé sang.", "Everyone cheered."],
+    ),
+    # An accented single letter is an initial, not a boundary.
+    ("She cited É. Jones today.", ["She cited É. Jones today."]),
+    # An accented capital after an ellipsis starts a sentence.
+    ("He waited... Éowyn arrived.", ["He waited...", "Éowyn arrived."]),
+    # Accented words are not starters, so conditionals stay joined.
+    ("Acme Inc. Ólafur played.", ["Acme Inc. Ólafur played."]),
+    # Guillemets close sentences like curly quotes do.
+    ("«Hola.» He translated.", ["«Hola.»", "He translated."]),
+    ("«Wait. » Then he left.", ["«Wait. »", "Then he left."]),
+    ("He said «hola». Then left.", ["He said «hola».", "Then left."]),
 ]
 
 

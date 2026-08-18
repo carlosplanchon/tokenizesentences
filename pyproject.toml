@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tokenizesentences"
-version = "0.4.0"
+version = "0.5.0"
 description = "Tiny, dependency-free English sentence tokenizer."
 readme = "README.md"
 
@@ -34,7 +34,16 @@ requires-python = ">=3.10"
 Repository = "https://github.com/carlosplanchon/tokenizesentences"
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.12", "ty==0.0.18"]
+dev = ["pytest>=8", "ruff>=0.12", "ty==0.0.18", "hypothesis>=6"]
+# Exact pins so the README benchmark table stays reconstructible
+# (uv.lock is not committed). Not installed in CI.
+benchmark = [
+    "nltk==3.10.3",
+    "pysbd==0.3.4",
+    "syntok==1.4.4",
+    "blingfire==0.1.8",
+    "spacy==3.8.13",
+]
 
 [tool.setuptools]
 packages = ["tokenizesentences"]

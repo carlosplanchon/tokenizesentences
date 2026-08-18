@@ -84,20 +84,23 @@ test suite:
   inputs with the same scoring; reproduce with
   `tools/eval_ewt.py --competitors`:
 
-  | system | precision | recall | F1 | speed |
+  | system | precision | recall | F1 | throughput |
   |---|---|---|---|---|
-  | pysbd | 95.67% | 84.10% | **89.51%** | 0.06 Mchar/s |
-  | **tokenizesentences** | **99.50%** | 79.22% | 88.21% | **6.5 Mchar/s** |
+  | pysbd | 95.67% | 84.10% | **89.51%** | 0.05 Mchar/s |
+  | **tokenizesentences** | **99.50%** | 79.22% | 88.21% | **4.6 Mchar/s** |
   | syntok | 98.38% | 79.16% | 87.73% | 0.30 Mchar/s |
   | nltk-punkt | 97.38% | 69.56% | 81.15% | 1.91 Mchar/s |
-  | spacy-sentencizer | 96.62% | 68.14% | 79.92% | 0.20 Mchar/s |
+  | spacy-sentencizer | 96.62% | 68.14% | 79.92% | 0.60 Mchar/s |
   | blingfire | 98.79% | 60.02% | 74.67% | 1.50 Mchar/s |
 
-  Highest precision and speed of the six; only pysbd scores a higher
-  F1, trading 3.8 points of precision and two orders of magnitude of
-  speed for it. Recall is spent on informal lowercase web text on
-  purpose. Competitor timings are single runs, and the blingfire and
-  syntok figures include offset reconstruction overhead.
+  Highest precision and throughput of the six on this evaluation;
+  only pysbd scores a higher F1, trading 3.8 points of precision and
+  two orders of magnitude of throughput for it. Recall is spent on
+  informal lowercase web text on purpose. Timings are medians of 7
+  passes after a warm-up; the blingfire and syntok figures include
+  offset reconstruction overhead. The corpus commit, its SHA256 and
+  the competitor versions are pinned, so the run is reconstructible:
+  see `tools/eval_ewt.py` and the `benchmark` dependency group.
 
 ## development
 ```
