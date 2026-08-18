@@ -73,6 +73,32 @@ test suite:
 - Titles (`Mr.`, `Sen.`, `St.`) never end a sentence, so `Main St. He
   walked.` stays joined.
 
+## benchmarks
+- 40 of the 51 English [Golden Rules](https://github.com/diasks2/pragmatic_segmenter#the-golden-rules)
+  from pragmatic_segmenter pass verbatim; the other 11 are pinned in
+  `tests/test_golden_rules.py` as strict xfails with documented
+  reasons (list detection, text rewriting, ellipsis attachment).
+- Boundary detection on the UD English-EWT test split (2,077 gold
+  sentences of raw web text, documents reconstructed from the
+  treebank). All systems ran the same day (August 2026) on the same
+  inputs with the same scoring; reproduce with
+  `tools/eval_ewt.py --competitors`:
+
+  | system | precision | recall | F1 | speed |
+  |---|---|---|---|---|
+  | pysbd | 95.67% | 84.10% | **89.51%** | 0.06 Mchar/s |
+  | **tokenizesentences** | **99.50%** | 79.22% | 88.21% | **6.5 Mchar/s** |
+  | syntok | 98.38% | 79.16% | 87.73% | 0.30 Mchar/s |
+  | nltk-punkt | 97.38% | 69.56% | 81.15% | 1.91 Mchar/s |
+  | spacy-sentencizer | 96.62% | 68.14% | 79.92% | 0.20 Mchar/s |
+  | blingfire | 98.79% | 60.02% | 74.67% | 1.50 Mchar/s |
+
+  Highest precision and speed of the six; only pysbd scores a higher
+  F1, trading 3.8 points of precision and two orders of magnitude of
+  speed for it. Recall is spent on informal lowercase web text on
+  purpose. Competitor timings are single runs, and the blingfire and
+  syntok figures include offset reconstruction overhead.
+
 ## development
 ```
 uv sync --group dev

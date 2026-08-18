@@ -115,6 +115,7 @@ _NUM_ABBREVS: Final[frozenset[str]] = frozenset(
         "ca",
         "approx",
         "est",
+        "pop",
         # Month abbreviations ("May" is never dotted).
         "Jan",
         "Feb",
@@ -376,16 +377,23 @@ def _is_boundary(text: str, i: int) -> bool:
             back -= 1
         ellipsis = back >= 0 and text[back] == "."
 
-    # R3: a mark glued to a following word character never splits.
-    # Covers decimals (3.14), versions (1.5.2), domains with ANY TLD
-    # (example.dev), filenames and e-mails, with no TLD list needed.
-    if nxt < len(text) and text[nxt].isalnum():
+    # R3: a mark glued to a following word character or slash never
+    # splits. Covers decimals (3.14), versions (1.5.2), domains with
+    # ANY TLD (example.dev), filenames, e-mails and URL innards
+    # ("index.ssf?/story", "./configure"), with no TLD list needed.
+    if nxt < len(text) and (text[nxt].isalnum() or text[nxt] == "/"):
         return False
 
     # R4: absorb closing quotes/brackets; another terminal right after
     # them means an enclosing sentence is still open: defer to it.
     j = _extend_closers(text, nxt)
     if j < len(text) and text[j] in _TERMINALS:
+        return False
+
+    # R4b: glued continuation punctuation means the sentence goes on
+    # ("Mississauga, Ont.; Kingston", "apples, etc., and more",
+    # '"Go home.", she said').
+    if j < len(text) and text[j] in ",;:":
         return False
 
     # R5: peek at the next significant character.
@@ -406,7 +414,9 @@ def _is_boundary(text: str, i: int) -> bool:
         word = _next_word(text, k)
         return word is not None and word != "I"
     if text[i] != ".":
-        return True
+        # "!" and "?" end a sentence only before a capitalized word or
+        # a digit; symbol salad ("! =----") reads as decoration.
+        return text[k].isupper() or text[k].isdigit()
 
     token = _token_before(text, i)
     if token is None:

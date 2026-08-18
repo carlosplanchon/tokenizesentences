@@ -300,6 +300,10 @@ NUMBER_CASES = [
     # Degree-sign variants of "No.".
     ("Find it at N°. 1026 on the map.", ["Find it at N°. 1026 on the map."]),
     ("See Nº. 7 for details.", ["See Nº. 7 for details."]),
+    (
+        "The city (pop. 256,000) grew fast.",
+        ["The city (pop. 256,000) grew fast."],
+    ),
 ]
 
 
@@ -331,6 +335,12 @@ DOMAIN_CASES = [
     ("The file user.name.json loaded.", ["The file user.name.json loaded."]),
     ("Email bob@site.com today.", ["Email bob@site.com today."]),
     ("Email a.b@c.net or call.", ["Email a.b@c.net or call."]),
+    # Marks glued to a slash are URL or path innards.
+    (
+        "See index.ssf?/lsustory for notes.",
+        ["See index.ssf?/lsustory for notes."],
+    ),
+    ("Run ./configure before building.", ["Run ./configure before building."]),
 ]
 
 
@@ -439,6 +449,29 @@ LATINISM_CASES = [
 def test_latinisms(text: str, expected: list[str]) -> None:
     """Forward-pointing latinisms never end a sentence; "etc." does,
     but only before a capitalized word."""
+    assert tokenize(text) == expected
+
+
+# --- Group 7b: glued continuation punctuation ----------------------------
+
+CONTINUATION_CASES = [
+    (
+        "They came from Kingston, Ont.; Toronto; and Ottawa.",
+        ["They came from Kingston, Ont.; Toronto; and Ottawa."],
+    ),
+    (
+        "I bought apples, etc., and more fruit.",
+        ["I bought apples, etc., and more fruit."],
+    ),
+    ('"Go home.", she said.', ['"Go home.", she said.']),
+    ("He yelled Stop!, then ran.", ["He yelled Stop!, then ran."]),
+]
+
+
+@pytest.mark.parametrize(("text", "expected"), CONTINUATION_CASES)
+def test_continuation_punctuation(text: str, expected: list[str]) -> None:
+    """A comma, semicolon or colon glued after the mark (and its
+    closers) means the sentence continues."""
     assert tokenize(text) == expected
 
 
@@ -612,6 +645,13 @@ EDGE_CASES = [
         ["A title", "with a spaced blank line."],
     ),
     ("“Quote.”\n\nNext paragraph.", ["“Quote.”", "Next paragraph."]),
+    # "!" and "?" split only before a capital or a digit; ASCII-art
+    # banners read as decoration.
+    (
+        "Over 19 Servers! =----- More below.",
+        ["Over 19 Servers! =----- More below."],
+    ),
+    ("It works! 20 people agree.", ["It works!", "20 people agree."]),
 ]
 
 

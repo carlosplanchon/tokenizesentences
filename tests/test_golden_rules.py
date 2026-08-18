@@ -11,8 +11,8 @@ https://github.com/diasks2/pragmatic_segmenter under the MIT license
 Rules the engine passes run as regular tests. The rest are strict
 xfails grouped by why they sit outside this library's contract: list
 detection needs document structure, some expected outputs rewrite the
-text, ellipses never end sentences here, and one rule is locally
-undecidable. If an engine change makes an xfail pass, strict mode
+text, and one rule attaches a spaced ellipsis to the sentence that
+follows it. If an engine change makes an xfail pass, strict mode
 turns it into a visible failure so the moved limit gets reviewed.
 """
 
