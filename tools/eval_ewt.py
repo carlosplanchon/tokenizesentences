@@ -39,6 +39,10 @@ from datetime import datetime
 from datetime import timezone
 
 from tokenizesentences import tokenize_spans
+
+# Private engine internals, imported on purpose: this tool lives in
+# the same repo and mirrors the boundary rules to label mistakes.
+# They are not public API and may change without notice.
 from tokenizesentences.tokenizesentences import _AMPM
 from tokenizesentences.tokenizesentences import _CONDITIONAL_ABBREVS
 from tokenizesentences.tokenizesentences import _NUM_ABBREVS

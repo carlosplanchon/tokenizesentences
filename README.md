@@ -78,11 +78,12 @@ test suite:
   from pragmatic_segmenter pass verbatim; the other 11 are pinned in
   `tests/test_golden_rules.py` as strict xfails with documented
   reasons (list detection, text rewriting, ellipsis attachment).
-- Boundary detection on the UD English-EWT test split (2,077 gold
-  sentences of raw web text, documents reconstructed from the
-  treebank). All systems ran the same day (August 2026) on the same
-  inputs with the same scoring; reproduce with
-  `tools/eval_ewt.py --competitors`:
+- Boundary detection on the UD English-EWT test split: 2,077 gold
+  sentences of raw web text in 316 reconstructed documents, scored on
+  the 1,761 interior boundaries (the trivial final boundary of each
+  document is excluded). All systems ran the same day (August 2026)
+  on the same inputs with the same scoring; reproduce with
+  `uv run python tools/eval_ewt.py --competitors --speed`:
 
   | system | precision | recall | F1 | throughput |
   |---|---|---|---|---|
