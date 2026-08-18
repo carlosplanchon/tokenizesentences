@@ -43,6 +43,7 @@ benchmark = [
     "syntok==1.4.4",
     "blingfire==0.1.8",
     "spacy==3.8.13",
+    "sentencex==1.0.30",
 ]
 
 [tool.setuptools]

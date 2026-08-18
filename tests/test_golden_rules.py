@@ -353,6 +353,20 @@ GOLDEN_RULES = [
             strict=True,
         ),
     ),
+    pytest.param(
+        "Hello world.Today is Tuesday.Mr. Smith went to the store and bought 1,000.That is a lot.",
+        [
+            "Hello world.",
+            "Today is Tuesday.",
+            "Mr. Smith went to the store and bought 1,000.",
+            "That is a lot.",
+        ],
+        id="52-no-whitespace-in-between-sentences",
+        marks=pytest.mark.xfail(
+            reason="A mark glued to a word character never splits; telling 'world.Today' from 'pathlib.Path' needs a lexicon, and that is how every domain, decimal and version survives without one.",
+            strict=True,
+        ),
+    ),
 ]
 
 

@@ -95,10 +95,11 @@ the original text and its offsets matters more than squeezing out
 the last point of F1.
 
 ## benchmarks
-- 40 of the 51 English [Golden Rules](https://github.com/diasks2/pragmatic_segmenter#the-golden-rules)
-  from pragmatic_segmenter pass verbatim; the other 11 are pinned in
+- 40 of the 52 English [Golden Rules](https://github.com/diasks2/pragmatic_segmenter#the-golden-rules)
+  from pragmatic_segmenter pass verbatim; the other 12 are pinned in
   `tests/test_golden_rules.py` as strict xfails with documented
-  reasons (list detection, text rewriting, ellipsis attachment).
+  reasons (list detection, text rewriting, ellipsis attachment,
+  glued sentences).
 - Boundary detection on the UD English-EWT test split: 2,077 gold
   sentences of raw web text in 316 reconstructed documents, scored on
   the 1,761 interior boundaries (the trivial final boundary of each
@@ -123,6 +124,29 @@ the last point of F1.
   offset reconstruction overhead. The corpus commit, its SHA256 and
   the competitor versions are pinned, so the run is reconstructible:
   see `tools/eval_ewt.py` and the `benchmark` dependency group.
+
+- The English suite of Wikimedia's
+  [sentencex](https://github.com/wikimedia/sentencex) (MIT), pinned
+  at an exact commit and SHA256, with its parsing and per-case
+  multiset-F1 metric replicated verbatim (234 scoreable cases; the
+  60-case table in their README predates their current suite).
+  Same-day run, August 2026; reproduce with
+  `uv run python tools/eval_sentencex.py --competitors`:
+
+  | system | mean F1 | perfect cases |
+  |---|---|---|
+  | sentencex | **99.94** | 233/234 |
+  | **tokenizesentences** | 86.17 | 195/234 |
+  | blingfire | 83.08 | 188/234 |
+  | syntok | 80.79 | 180/234 |
+  | pysbd | 64.33 | 136/234 |
+  | nltk-punkt | 62.92 | 132/234 |
+  | spacy-sentencizer | 62.52 | 134/234 |
+
+  Second only to sentencex itself on sentencex's home suite, first
+  among everything else. The ranking shuffle against the EWT table
+  above (pysbd drops from first to fifth) is exactly why this README
+  carries more than one benchmark.
 
 ## development
 ```

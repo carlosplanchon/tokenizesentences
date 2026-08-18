@@ -59,10 +59,18 @@ CATEGORY = {
     ),
     42: "Single newlines never force a boundary by design.",
     51: ELLIPSIS_ATTACH,
+    52: (
+        "A mark glued to a word character never splits; telling "
+        "'world.Today' from 'pathlib.Path' needs a lexicon, and that "
+        "is how every domain, decimal and version survives without "
+        "one."
+    ),
 }
 
+# The title line may carry trailing text after the bold title, e.g.
+# rule 52's "*Credit: Don_Patrick*" suffix.
 RULE_RE = re.compile(
-    r"^(\d+)\.\)\s+\*\*(.+?)\*\*\s*\n```\n(.*?)\n```",
+    r"^(\d+)\.\)\s+\*\*(.+?)\*\*[^\n]*\n```\n(.*?)\n```",
     re.MULTILINE | re.DOTALL,
 )
 

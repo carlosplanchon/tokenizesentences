@@ -12,10 +12,11 @@ Complete rewrite of the historical library.
   `SplitIntoSentences().split_into_sentences(text)` to
   `tokenize(text)`.
 - Regression corpus (350+ cases, with the documented limits pinned as
-  strict xfails), property-based fuzzing, and two pinned benchmarks:
-  the pragmatic_segmenter English Golden Rules (40 of 51 pass) and a
-  reproducible UD English-EWT evaluation with frozen corpus and
-  competitor versions (see `tools/`).
+  strict xfails), property-based fuzzing, and three pinned
+  benchmarks: the pragmatic_segmenter English Golden Rules (40 of 52
+  pass), a reproducible UD English-EWT evaluation, and the sentencex
+  English suite scored in its own metric, all with frozen corpora
+  and competitor versions (see `tools/`).
 - Modern packaging: PEP 639 license metadata, `py.typed`, CI across
   Python 3.10 to 3.14, ruff and ty, PyPI trusted publishing.
 
