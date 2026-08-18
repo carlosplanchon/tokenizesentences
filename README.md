@@ -73,6 +73,27 @@ test suite:
 - Titles (`Mr.`, `Sen.`, `St.`) never end a sentence, so `Main St. He
   walked.` stays joined.
 
+## why tokenizesentences?
+
+`tokenizesentences` is designed for pipelines where sentence splitting
+should be a small, predictable primitive rather than a heavyweight NLP
+component. It is conservative, fast, dependency-free and lossless:
+
+- **Conservative:** ambiguous boundaries are joined rather than
+  split, favoring fewer false boundaries over higher recall.
+- **Fast:** a small index-based scanner keeps segmentation cheap in
+  high-volume pipelines.
+- **Dependency-free:** no models, no data downloads, no runtime
+  dependencies.
+- **Lossless:** sentences are literal slices of the original text,
+  with exact offsets available through `tokenize_spans()`.
+
+That combination is built for the case where a false split costs
+more than a missed boundary: preprocessing, scraping, indexing,
+annotation, highlighting, and NLP or LLM pipelines where preserving
+the original text and its offsets matters more than squeezing out
+the last point of F1.
+
 ## benchmarks
 - 40 of the 51 English [Golden Rules](https://github.com/diasks2/pragmatic_segmenter#the-golden-rules)
   from pragmatic_segmenter pass verbatim; the other 11 are pinned in
