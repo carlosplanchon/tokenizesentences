@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tokenizesentences"
-version = "0.5.0"
+version = "0.5.1"
 description = "Tiny, dependency-free English sentence tokenizer."
 readme = "README.md"
 
