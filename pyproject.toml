@@ -38,7 +38,7 @@ dev = ["pytest>=8", "ruff>=0.12", "ty==0.0.18", "hypothesis>=6"]
 # Exact pins so the README benchmark table stays reconstructible
 # (uv.lock is not committed). Not installed in CI.
 benchmark = [
-    "nltk==3.10.3",
+    "nltk==3.10.4",
     "pysbd==0.3.4",
     "syntok==1.4.4",
     "blingfire==0.1.8",
